@@ -1,0 +1,48 @@
+{
+  "name": "veciana-laboratorio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:web": "vite --host 127.0.0.1",
+    "dev:server": "tsx watch server/index.ts --local",
+    "build": "vite build && tsc -p tsconfig.server.json",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
+    "test": "vitest run --root . tests/seed.test.ts tests/html-source.test.ts",
+    "test:integration": "tsx tests/integration.ts",
+    "test:e2e": "playwright test",
+    "init": "node dist/server/seed.js",
+    "start": "node dist/server/index.js"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/static": "^10.1.5",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@xyflow/react": "^12.10.0",
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.7.1",
+    "lucide-react": "^0.563.0",
+    "mssql": "^12.2.0",
+    "mysql2": "^3.16.0",
+    "pg": "^8.17.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/mssql": "^9.1.9",
+    "@types/node": "^22.19.7",
+    "@types/pg": "^8.16.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1",
+    "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "tinypool": "^2.1.2"
+  }
+}

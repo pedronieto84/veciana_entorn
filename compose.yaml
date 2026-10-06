@@ -1,0 +1,82 @@
+name: veciana-lab
+x-app: &app
+  build: .
+  image: veciana-lab-web
+  env_file: .env
+  environment:
+    PG_HOST: padron
+    MYSQL_HOST: tributos
+    MSSQL_HOST: expedientes
+    DATA_DIR: /app/data
+  volumes:
+    - historial:/app/data
+services:
+  padron:
+    image: postgres:16.13-alpine
+    environment:
+      POSTGRES_DB: padron
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PG_ADMIN_PASSWORD:?Crear .env desde .env.example}
+    command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=all"]
+    ports: ["127.0.0.1:${PG_PORT:-55432}:5432"]
+    volumes: ["padron:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d padron"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  tributos:
+    image: mysql:8.4.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADMIN_PASSWORD:?Crear .env}
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: tributos
+    command: ["--general-log=ON", "--log-output=TABLE", "--event-scheduler=ON"]
+    ports: ["127.0.0.1:${MYSQL_PORT:-53306}:3306"]
+    volumes: ["tributos:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  expedientes:
+    image: mcr.microsoft.com/mssql/server:2022-CU22-ubuntu-22.04
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_ADMIN_PASSWORD:?Crear .env}
+      MSSQL_MEMORY_LIMIT_MB: "2048"
+    ports: ["127.0.0.1:${MSSQL_PORT:-51433}:1433"]
+    volumes: ["expedientes:/var/opt/mssql"]
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 5s
+      timeout: 10s
+      start_period: 30s
+      retries: 40
+    restart: unless-stopped
+  init:
+    <<: *app
+    command: ["npm", "run", "init"]
+    depends_on:
+      padron: { condition: service_healthy }
+      tributos: { condition: service_healthy }
+      expedientes: { condition: service_healthy }
+  web:
+    <<: *app
+    ports: ["127.0.0.1:${WEB_PORT:-8088}:8080"]
+    depends_on:
+      init: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+volumes:
+  padron:
+  tributos:
+  expedientes:
+  historial:
