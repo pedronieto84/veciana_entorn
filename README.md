@@ -20,7 +20,7 @@ npm run dev:server
 npm run dev:web
 ```
 
-El frontend utiliza `WEB_PORT` (8088), el backend `APP_PORT` (8080) y la web Escoles `ESCOLES_PORT` (8090). El modo desarrollo escucha solo en localhost. Si 8088 ya esta ocupado, establecer `$env:WEB_PORT='8089'` en ambas terminales antes de arrancar y en la terminal de pruebas E2E. No sobrescribir el archivo `.env` ni cambiar las credenciales existentes.
+El frontend utiliza `WEB_PORT` (8091), el backend `APP_PORT` (8092) y la web Escoles `ESCOLES_PORT` (8090). El modo desarrollo escucha solo en localhost. Para cambiar los puertos, actualizar `WEB_PORT` y `APP_PORT` en `.env` y reiniciar frontend y backend; Vite y las pruebas E2E leen esas mismas variables. Las variables de entorno de la terminal tienen prioridad sobre `.env`: eliminar cualquier valor anterior de `WEB_PORT` o `APP_PORT` antes de arrancar. No sobrescribir el archivo `.env` ni cambiar las credenciales existentes.
 
 Escoles: http://localhost:8090. Una unica tabla HTML, servida sin JavaScript ni API JSON de alumnos, contiene 20 matriculas sinteticas del ano 2026-2027. Una fila por alumno y ano academico; datos del alumno, centro, etapa, curso y matricula en la misma tabla. Las 20 referencias iniciales corresponden a los menores 81-100 del padron; los alumnos nuevos no tienen referencia padronal. Nunca contiene personas reales, documentos ni datos de tutores.
 
@@ -32,7 +32,7 @@ Las rutas `/api/sources` y `/api/source/:source/...` ofrecen un contrato de fuen
 
 La ingesta de tablas web arbitrarias en OpenMetadata no esta implementada: puede requerir un conector personalizado o extraccion a CSV/SQL, conservando la URL de origen. La calidad mostrada es local, no un resultado de OpenMetadata.
 
-Web: http://localhost:8088
+Web: http://localhost:8091
 
 - Acceso directo, sin usuario ni contrasena web.
 - La pestaña **Conexiones** muestra puertos, hosts, usuarios y contrasenas de las tres bases, y la URL y selector de la fuente HTML Escoles.
@@ -43,7 +43,7 @@ Solo uso local, no productivo. Las credenciales son publicas y exclusivas de est
 
 - Docker Desktop con contenedores Linux, WSL2 y arquitectura x86-64. SQL Server Linux no se soporta aqui sobre ARM.
 - Recomendado: 6-8 GB disponibles para el laboratorio, ademas de los recursos de OpenMetadata y otros contenedores. SQL Server se configura con limite interno de memoria de 2 GB; no es un limite global del contenedor.
-- Puertos `55432`, `53306`, `51433` y `8088` disponibles. Modificables en `.env` antes de arrancar.
+- Puertos `55432`, `53306`, `51433`, `8090`, `8091` y `8092` disponibles. Modificables en `.env` antes de arrancar.
 - SQL Server 2022 **Developer**: exclusivamente desarrollo y pruebas. Compose establece `ACCEPT_EULA=Y`; revisa los terminos de Microsoft antes de ejecutar el despliegue.
 - Node.js 22 solo para ejecutar las pruebas desde Windows; no se requiere para usar el laboratorio en Docker.
 
@@ -81,7 +81,7 @@ Las contrasenas de los usuarios de bases se establecen cuando se crean. Editar `
 | Padron | PostgreSQL 16.13 | padron | public | localhost:55432 | host.docker.internal:55432 | 5432 |
 | Tributos | MySQL 8.4.7 | tributos | tributos | localhost:53306 | host.docker.internal:53306 | 3306 |
 | Expedientes | SQL Server 2022 CU22 | expedientes | dbo | localhost:51433 | host.docker.internal:51433 | 1433 |
-| Explorador | Node.js 22.22 / React | - | - | localhost:8088 | host.docker.internal:8088 | 8080 |
+| Explorador | Node.js 22.22 / React | - | - | localhost:8091 | host.docker.internal:8091 | 8092 |
 
 Dentro de la red Compose se utilizan `padron:5432`, `tributos:3306` y `expedientes:1433`. No utilizar estos nombres desde otra red de Docker sin conectarla expresamente.
 

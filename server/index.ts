@@ -68,7 +68,7 @@ app.get<{ Params: Params }>('/api/db/:db/quality', request => quality(databaseId
 app.get<{ Params: Params }>('/api/db/:db/scenarios', request => scripts(databaseId(request.params.db)));
 app.get<{ Params: Params }>('/api/db/:db/history', request => history(databaseId(request.params.db)));
 app.get('/api/connections', () => ({
-  web: { host: 'localhost', port: Number(process.env.WEB_PORT || 8088), internalPort: 8080 },
+  web: { host: 'localhost', port: Number(process.env.WEB_PORT || 8091), internalPort: Number(process.env.APP_PORT || 8092) },
   html: htmlConnection(),
   databases: databaseIds.map(db => ({ id: db, ...definitions[db], windowsHost: 'localhost', dockerHost: 'host.docker.internal',
     accounts: [{ role: 'OpenMetadata / lectura', username: 'openmetadata_reader', password: secrets.reader }, { role: 'Laboratorio / cambios', username: 'veciana_lab', password: secrets.lab }, { role: 'Administrador / arranque', username: definitions[db].admin, password: definitions[db].adminPassword }] }))
@@ -92,6 +92,6 @@ app.setNotFoundHandler((request, reply) => request.url.startsWith('/api/') ? rep
 app.addHook('onClose', closePools);
 app.addHook('onClose', async () => { await schoolSite.app.close(); });
 await schoolSite.app.listen({ host: process.env.APP_HOST || '127.0.0.1', port: escolePort });
-await app.listen({ host: process.env.APP_HOST || (process.argv.includes('--local') ? '127.0.0.1' : '0.0.0.0'), port: Number(process.env.APP_PORT || 8080) });
+await app.listen({ host: process.env.APP_HOST || (process.argv.includes('--local') ? '127.0.0.1' : '0.0.0.0'), port: Number(process.env.APP_PORT || 8092) });
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { void app.close(); });
-console.log(`Veciana: backend en ${process.env.APP_PORT || 8080}; Escoles en ${escolePort}`);
+console.log(`Veciana: backend en ${process.env.APP_PORT || 8092}; Escoles en ${escolePort}`);

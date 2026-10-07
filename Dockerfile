@@ -13,5 +13,5 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 RUN mkdir /app/data && chown node:node /app/data
 USER node
-EXPOSE 8080
+EXPOSE 8092
 CMD ["npm", "start"]
